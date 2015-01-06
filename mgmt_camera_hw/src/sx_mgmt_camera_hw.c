@@ -1125,7 +1125,7 @@ sSX_CAMERA_HW_BUFFER * sx_camera_hw_get(void) {
 	}
 
 	unsigned int len = sx_queue_len_get(f_nal_queue);
-	printf("f_nal_queue len = %d\n", len);
+	//printf("f_nal_queue len = %d\n", len);
 
 	return (sSX_CAMERA_HW_BUFFER *) sx_queue_pull(f_nal_queue);
 }

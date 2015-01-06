@@ -208,9 +208,7 @@ SX_QUEUE queue_id
 	return data;
 }
 
-unsigned int sx_queue_len_get(
-SX_QUEUE queue_id
-)
+unsigned int sx_queue_len_get(SX_QUEUE queue_id)
 {
 	sQUEUE *queue;
 	unsigned int len;
