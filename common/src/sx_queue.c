@@ -5,236 +5,224 @@
 
 #include "sx_queue.h"
 
-typedef struct sNODE
-{
-    struct sNODE   *next;
-    void           *data;
+typedef struct sNODE {
+struct sNODE *next;
+void *data;
 
 } sNODE;
 
-
-typedef struct
-{
-    sNODE          *head;
-    sNODE          *tail;
-    pthread_mutex_t lock;
-    unsigned int    len;
+typedef struct {
+sNODE *head;
+sNODE *tail;
+pthread_mutex_t lock;
+unsigned int len;
 
 } sQUEUE;
-
 
 // --------------------------------------------------------
 // rt_queue_create
 //      Create a queue.
 //
 SX_QUEUE sx_queue_create(
-    void
-    )
+		void
+)
 {
-    sQUEUE *queue = malloc(sizeof(sQUEUE));
+	sQUEUE *queue = malloc(sizeof(sQUEUE));
 
-    pthread_mutex_init(&queue->lock, NULL);
+	pthread_mutex_init(&queue->lock, NULL);
 
-    queue->head = NULL;
-    queue->tail = NULL;
-    queue->len  = 0;
+	queue->head = NULL;
+	queue->tail = NULL;
+	queue->len = 0;
 
-    return queue;
+	return queue;
 }
-
 
 // --------------------------------------------------------
 // rt_queue_destroy
 //      Destory a queue.
 //
 void sx_queue_destroy(
-    SX_QUEUE    queue_id
-    )
+SX_QUEUE queue_id
+)
 {
-    sQUEUE *queue;
-    sNODE  *curr;
-    sNODE  *next;
+	sQUEUE *queue;
+	sNODE *curr;
+	sNODE *next;
 
+	// Get the queue.
+	queue = queue_id;
 
-    // Get the queue.
-    queue = queue_id;
+	// Free every node.
+	curr = queue->head;
+	while(curr)
+	{
+		next = curr->next;
 
-    // Free every node.
-    curr = queue->head;
-    while(curr)
-    {
-        next = curr->next;
+		// Free data.
+		free(curr->data);
 
-        // Free data.
-        free(curr->data);
+		// Free node.
+		free(curr);
 
-        // Free node.
-        free(curr);
+		curr = next;
+	}
 
-        curr = next;
-    }
+	// Destroy mutex.
+	pthread_mutex_destroy(&queue->lock);
 
-    // Destroy mutex.
-    pthread_mutex_destroy(&queue->lock);
-
-    // Free queue.
-    free(queue);
+	// Free queue.
+	free(queue);
 }
-
 
 // --------------------------------------------------------
 // rt_queue_push
 //      Push a data payload.
 //
 void sx_queue_push(
-    SX_QUEUE    queue_id,
-    void       *data
-    )
+SX_QUEUE queue_id,
+void *data
+)
 {
-    sNODE  *node;
-    sQUEUE *queue;
+	sNODE *node;
+	sQUEUE *queue;
 
+	assert(data != NULL);
 
-    assert(data != NULL);
+	// Get queue.
+	queue = queue_id;
 
-    // Get queue.
-    queue = queue_id;
+	// Construct new node.
+	node = malloc(sizeof(sNODE));
+	node->data = data;
+	node->next = NULL;
 
-    // Construct new node.
-    node = malloc(sizeof(sNODE));
-    node->data = data;
-    node->next = NULL;
-
-    // Lock.
-    pthread_mutex_lock(&queue->lock);
+	// Lock.
+	pthread_mutex_lock(&queue->lock);
 
 #if 0
-    printf("(rt_queue): push(): id = 0x%x, len = %d\n",
-            (int) queue_id,
-            queue->len);
+	printf("(rt_queue): push(): id = 0x%x, len = %d\n",
+	(int) queue_id,
+	queue->len);
 #endif
 
-    // Is list empty?
-    if(queue->head == NULL)
-    {
-        // List is empty, insert only node.
-        queue->head = node;
+	// Is list empty?
+	if(queue->head == NULL)
+	{
+		// List is empty, insert only node.
+		queue->head = node;
 
-        queue->tail = node;
+		queue->tail = node;
 
-        goto cleanup;
-    }
+		goto cleanup;
+	}
 
-    // Append to end.
-    queue->tail->next = node;
+	// Append to end.
+	queue->tail->next = node;
 
-    // Update tail.
-    queue->tail = node;
+	// Update tail.
+	queue->tail = node;
 
-cleanup:
+	cleanup:
 
-    queue->len++;
+	queue->len++;
 
-    pthread_mutex_unlock(&queue->lock);
+	pthread_mutex_unlock(&queue->lock);
 }
-
 
 // --------------------------------------------------------
 // rt_queue_pull
 //      Pull a data payload.
 //
 void * sx_queue_pull(
-    SX_QUEUE    queue_id
-    )
+SX_QUEUE queue_id
+)
 {
-    sQUEUE         *queue;
-    unsigned char  *data;
+	sQUEUE *queue;
+	unsigned char *data;
 
+	// Get queue.
+	queue = queue_id;
 
-    // Get queue.
-    queue = queue_id;
-
-    // Lock.
-    pthread_mutex_lock(&queue->lock);
+	// Lock.
+	pthread_mutex_lock(&queue->lock);
 
 #if 0
-    printf("(rt_queue): pull(): id = 0x%x, len = %d\n",
-            (int) queue,
-            queue->len);
+	printf("(rt_queue): pull(): id = 0x%x, len = %d\n",
+	(int) queue,
+	queue->len);
 #endif
 
-    // Is list empty?
-    if(queue->head == NULL)
-    {
-        assert(queue->tail == NULL);
+	// Is list empty?
+	if(queue->head == NULL)
+	{
+		assert(queue->tail == NULL);
 
-        // List is empty.
-        data = NULL;
+		// List is empty.
+		data = NULL;
 
-        goto cleanup;
-    }
+		goto cleanup;
+	}
 
-    if(queue->head == queue->tail)
-    {
-        assert(queue->head->next == NULL);
-        assert(queue->tail->next == NULL);
+	if(queue->head == queue->tail)
+	{
+		assert(queue->head->next == NULL);
+		assert(queue->tail->next == NULL);
 
-        // List only has one element.
-        data = queue->head->data;
+		// List only has one element.
+		data = queue->head->data;
 
-        // Free the node.
-        free(queue->head);
+		// Free the node.
+		free(queue->head);
 
-        // Reset head and tail.
-        queue->head = NULL;
-        queue->tail = NULL;
+		// Reset head and tail.
+		queue->head = NULL;
+		queue->tail = NULL;
 
-        goto cleanup;
-    }
+		goto cleanup;
+	}
 
-    // More than one element.
+	// More than one element.
 
-    // Return packet.
-    data = queue->head->data;
+	// Return packet.
+	data = queue->head->data;
 
-    // Get next.
-    sNODE *next = queue->head->next;
+	// Get next.
+	sNODE *next = queue->head->next;
 
-    // Free head.
-    free(queue->head);
+	// Free head.
+	free(queue->head);
 
-    // Advance head.
-    queue->head = next;
+	// Advance head.
+	queue->head = next;
 
-cleanup:
+	cleanup:
 
-    if(data != NULL)
-    {
-        queue->len--;
-    }
+	if(data != NULL)
+	{
+		queue->len--;
+	}
 
-    pthread_mutex_unlock(&queue->lock);
+	pthread_mutex_unlock(&queue->lock);
 
-    return data;
+	return data;
 }
-
 
 unsigned int sx_queue_len_get(
-    SX_QUEUE    queue_id
-    )
+SX_QUEUE queue_id
+)
 {
-    sQUEUE         *queue;
-    unsigned int    len;
+	sQUEUE *queue;
+	unsigned int len;
 
+	// Get queue.
+		queue = queue_id;
 
-    // Get queue.
-    queue = queue_id;
+		pthread_mutex_lock(&queue->lock);
 
-    pthread_mutex_lock(&queue->lock);
+		len = queue->len;
 
-    len = queue->len;
+		pthread_mutex_unlock(&queue->lock);
 
-    pthread_mutex_unlock(&queue->lock);
-
-    return len;
-}
+		return len;
+	}

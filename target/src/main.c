@@ -1,17 +1,14 @@
-
 #include "stdio.h" 
 #include "assert.h"
 
 #include "sx_mgmt_sys.h"
 
-int main(
-    void
-    )
-{
-    mgmt_sys_init();
+int main(void) {
 
-    mgmt_sys_open();
+	mgmt_sys_init();
 
-    return 0; 
+	mgmt_sys_open();
+
+	return 0;
 }
 
