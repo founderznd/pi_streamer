@@ -10,6 +10,7 @@
 #include "sx_mgmt_rtsp.h"
 
 #define RTSP_BUF_SIZE_MAX   2048
+#define MGMT_RTSP_PORT		544
 
 #define OPTIONS             "OPTIONS"
 #define DESCRIBE            "DESCRIBE"
@@ -419,10 +420,9 @@ void sx_mgmt_rtsp_init(fSX_MGMT_RTSP_CBACK user_cback, void *user_arg) {
 	f_cblk.user_arg = user_arg;
 }
 
-void sx_mgmt_rtsp_open(int port) {
+void sx_mgmt_rtsp_open() {
 
-	#define MGMT_RTSP_PORT port
-	printf("mgmt_rtsp_open(): Inovked.\n");
+	printf("mgmt_rtsp_open(): Inovked.\t Server Port : %d \n ",MGMT_RTSP_PORT);
 	// Create RTSP thread.
 	tcp_listener_create();
 }
