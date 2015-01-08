@@ -9,9 +9,7 @@
 #include "assert.h"
 
 #include "sx_mgmt_rtsp.h"
-
 #define RTSP_BUF_SIZE_MAX   2048
-#define MGMT_RTSP_PORT      8554
 
 #define OPTIONS             "OPTIONS"
 #define DESCRIBE            "DESCRIBE"
@@ -25,7 +23,6 @@ typedef enum {
 	RTSP_MSG_SETUP,
 	RTSP_MSG_PLAY,
 	RTSP_MSG_TEARDOWN,
-
 } eRTSP_MSG;
 
 typedef struct {
@@ -52,7 +49,6 @@ static sMGMT_RTSP_CBLK f_cblk;
 
 static unsigned int session_instance_alloc(void) {
 	unsigned int i;
-
 	// TODO: mutex
 
 	for (i = 0; i < 32; i++) {

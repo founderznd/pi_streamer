@@ -138,8 +138,11 @@ static void mgmt_sys_thread_create() {
 	pthread_create(&f_cblk.thread_id, NULL, (void *) &mgmt_sys_thread, NULL);
 }
 
-void mgmt_sys_init() {
-	printf("mgmt_sys_init(): Invoked.\n");
+void mgmt_sys_init(int port) {
+
+	#define MGMT_RTSP_PORT port
+
+	printf("mgmt_sys_init(): Invoked.\t  server port: %d \n", MGMT_RTSP_PORT);
 
 	// Initialize resources.
 	rerouces_init();

@@ -5,7 +5,8 @@
 
 int main(void) {
 
-	mgmt_sys_init();
+	//parameter is port
+	mgmt_sys_init(544);
 
 	mgmt_sys_open();
 

@@ -1035,15 +1035,14 @@ void camera_thread(void) {
 	status = connect_ports(camera_video_port, encoder_input_port, &state.encoder_connection);
 	assert(status == MMAL_SUCCESS);
 
-	//char *filename = "output.h264";
+	char *filename = "output.h264";
 
-	//state.filename = filename;
+	state.filename = filename;
 
-	//output_file = fopen(state.filename, "wb");
+	output_file = fopen(state.filename, "wb");
 
 	// Set up our userdata - this is passed though to the callback where we need the information.
-	//callback_data.file_handle = output_file;
-	callback_data.file_handle = NULL;
+	callback_data.file_handle = output_file;
 	callback_data.pstate = &state;
 	callback_data.abort = 0;
 
