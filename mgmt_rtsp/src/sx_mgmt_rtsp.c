@@ -11,7 +11,7 @@
 
 #define RTSP_BUF_SIZE_MAX   2048
 //default port
-#define MGMT_RTSP_PORT		8544
+#define MGMT_RTSP_PORT		544
 
 #define OPTIONS             "OPTIONS"
 #define DESCRIBE            "DESCRIBE"

@@ -140,7 +140,7 @@ static void mgmt_sys_thread_create() {
 
 void mgmt_sys_init() {
 
-	printf("mgmt_sys_init(): Invoked.\t");
+	printf("mgmt_sys_init(): Invoked.\n");
 
 	// Initialize resources.
 	rerouces_init();
