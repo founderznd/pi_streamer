@@ -7,6 +7,7 @@
 #include "sx_mgmt_rtp.h"
 
 #define MGMT_SYS_MSG_QUEUE  "/mgmt_sys_msg_queue"
+int serverPort;
 
 typedef enum {
 	MGMT_SYS_EVENT_PLAY,
@@ -86,7 +87,7 @@ static void mgmt_sys_thread(void * arg) {
 	unsigned int bytes_read;
 
 	// Open RTSP manager.
-	sx_mgmt_rtsp_open();
+	sx_mgmt_rtsp_open(serverPort);
 
 	// Open RTP manager.
 	sx_mgmt_rtp_open();
@@ -140,9 +141,8 @@ static void mgmt_sys_thread_create() {
 
 void mgmt_sys_init(int port) {
 
-	#define MGMT_RTSP_PORT port
-
-	printf("mgmt_sys_init(): Invoked.\t  server port: %d \n", MGMT_RTSP_PORT);
+	serverPort = port;
+	printf("mgmt_sys_init(): Invoked.\t");
 
 	// Initialize resources.
 	rerouces_init();
@@ -158,6 +158,7 @@ void mgmt_sys_init(int port) {
 }
 
 void mgmt_sys_open() {
+
 	printf("mgmt_sys_open(): Invoked.\n");
 
 	mgmt_sys_thread_create();

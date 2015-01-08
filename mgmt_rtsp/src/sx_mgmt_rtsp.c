@@ -7,8 +7,8 @@
 #include <netdb.h> 
 
 #include "assert.h"
-
 #include "sx_mgmt_rtsp.h"
+
 #define RTSP_BUF_SIZE_MAX   2048
 
 #define OPTIONS             "OPTIONS"
@@ -412,16 +412,17 @@ static void tcp_listener_create() {
 }
 
 void sx_mgmt_rtsp_init(fSX_MGMT_RTSP_CBACK user_cback, void *user_arg) {
-	printf("mgmt_rtsp_init(): Inovked.\n");
 
+	printf("mgmt_rtsp_init(): Inovked.\n");
 	// Cache user callback.
 	f_cblk.user_cback = user_cback;
 	f_cblk.user_arg = user_arg;
 }
 
-void sx_mgmt_rtsp_open() {
-	printf("mgmt_rtsp_open(): Inovked.\n");
+void sx_mgmt_rtsp_open(int port) {
 
+	#define MGMT_RTSP_PORT port
+	printf("mgmt_rtsp_open(): Inovked.\n");
 	// Create RTSP thread.
 	tcp_listener_create();
 }
